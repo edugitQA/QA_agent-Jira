@@ -1,0 +1,8 @@
+jira
+openai
+python-dotenv
+schedule
+Flask
+Flask-SQLAlchemy
+markdown
+bleach
