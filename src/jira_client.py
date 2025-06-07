@@ -71,21 +71,21 @@ class JiraClient:
         
 
 
-
+##teste isolado
 if __name__ == "__main__":
-    # Inicializa o cliente Jira
+   
     jira_client = JiraClient()
 
-    # Busca histórias de usuário
+   
     project_key = os.getenv("JIRA_PROJECT_KEY")
     status = os.getenv("JIRA_STATUS", "To Do")
     stories = jira_client.get_user_stories(
         project_key=project_key,
         status=status,
-        days_ago=30  # Histórias criadas nos últimos 30 dias
+        days_ago=30 
     )
 
-    # Exibe as histórias encontradas
+   
     for story in stories:
         title_normalized = unicodedata.normalize('NFKD', story['title']).encode('ascii', 'ignore').decode('ascii')
         description_normalized = unicodedata.normalize('NFKD', story['description'][:100]).encode('ascii', 'ignore').decode('ascii')
