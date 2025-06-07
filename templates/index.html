@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}QA Agent - Histórias de Usuário{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Histórias de Usuário</h1>
+        <p class="lead">Visualize as histórias de usuário e seus casos de teste gerados.</p>
+    </div>
+</div>
+
+<div class="row">
+    {% if user_stories %}
+        {% for story in user_stories %}
+            <div class="col-md-6 col-lg-4">
+                <div class="card story-card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <span class="badge bg-primary">{{ story.jira_key }}</span>
+                        <span class="badge {% if story.status == 'To Do' %}bg-warning{% elif story.status == 'Done' %}bg-success{% else %}bg-info{% endif %}">
+                            {{ story.status }}
+                        </span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title">{{ story.title }}</h5>
+                        <p class="card-text text-muted small">Criado em: {{ story.created_at|format_datetime }}</p>
+                        <a href="{{ url_for('view_story', story_id=story.id) }}" class="btn btn-primary">Ver Casos de Teste</a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col">
+            <div class="alert alert-info">
+                Nenhuma história de usuário encontrada. As histórias serão exibidas aqui quando forem importadas do Jira.
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
