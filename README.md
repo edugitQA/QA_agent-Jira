@@ -1,4 +1,7 @@
 # QA Agent
+O QA Agent é um exemplo de como a IA pode ser aplicada para automatizar tarefas repetitivas e aumentar a produtividade das equipes de QA.
+Ao gerar casos de teste automaticamente a partir de histórias de usuário, o sistema permite que os testadores foquem em atividades de maior
+valor agregado, como a execução e análise dos testes.
 
 ## Visão Geral
 O QA Agent é um sistema automatizado projetado para equipes de Garantia de Qualidade (QA) que desejam automatizar a criação de casos de teste. Ele monitora novas histórias de usuário no Jira e utiliza a API da OpenAI (GPT) para gerar casos de teste detalhados, economizando tempo e mantendo consistência.
@@ -91,6 +94,7 @@ Configura e executa a aplicação web usando Flask.
 - **python-dotenv**: Gerenciamento de variáveis de ambiente.
 - **markdown**: Renderização de conteúdo Markdown para HTML.
 - **bleach**: Sanitização de HTML para segurança contra XSS.
+- **pytz**: Biblioteca para manipulação de fusos horários e ajuste para o fuso de São Paulo nas datas exibidas no front-end.
 
 ## Variáveis de Ambiente (.env)
 Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
