@@ -1,4 +1,4 @@
-# QA Agent
+# QA-Agent
 O QA Agent é um exemplo de como a IA pode ser aplicada para automatizar tarefas repetitivas e aumentar a produtividade das equipes de QA.
 Ao gerar casos de teste automaticamente a partir de histórias de usuário, o sistema permite que os testadores foquem em atividades de maior
 valor agregado, como a execução e análise dos testes.
