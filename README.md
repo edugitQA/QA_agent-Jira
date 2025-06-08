@@ -16,7 +16,7 @@ qa_agent/
 ├── start_webapp.sh
 ├── config/
 ├── data/
-│   └── test_cases.db
+│   └── qa_agent.db
 ├── src/
 │   ├── db_manager.py
 │   ├── jira_client.py
@@ -82,9 +82,60 @@ Comunica-se com a API da OpenAI para gerar casos de teste.
 ### `src/web_app.py`
 Configura e executa a aplicação web usando Flask.
 
-## Boas Práticas
-- **Segurança**: Certifique-se de que o arquivo `.env` contendo chaves de API esteja no `.gitignore`.
-- **Manutenção**: Atualize regularmente as dependências e revise o código para melhorias.
+## Tecnologias Utilizadas
+- **Python 3.9+**: Linguagem principal para desenvolvimento.
+- **Flask**: Framework web para a aplicação front-end.
+- **Jira API**: Integração para monitoramento de histórias de usuário.
+- **OpenAI API**: Geração de casos de teste automatizados.
+- **SQLite**: Banco de dados local para armazenamento de histórias e casos de teste.
+- **python-dotenv**: Gerenciamento de variáveis de ambiente.
+- **markdown**: Renderização de conteúdo Markdown para HTML.
+- **bleach**: Sanitização de HTML para segurança contra XSS.
+
+## Variáveis de Ambiente (.env)
+Crie um arquivo `.env` na raiz do projeto com as seguintes variáveis:
+```
+JIRA_URL=https://<seu-dominio>.atlassian.net
+JIRA_USER=<seu-email>
+JIRA_API_TOKEN=<seu-token>
+JIRA_PROJECT_KEY=<chave-do-projeto>
+OPENAI_API_KEY=<sua-chave-openai>
+CHECK_INTERVAL_MINUTES=60
+```
+
+## Execução Manual
+
+### Iniciar o Agente QA (modo único)
+```bash
+python3 src/main.py --once
+```
+
+### Iniciar o Agente QA (modo monitoramento contínuo)
+```bash
+python3 src/main.py
+```
+
+### Iniciar a Aplicação Web
+```bash
+python3 src/web_app.py
+```
+
+Acesse a aplicação em [http://127.0.0.1:5003](http://127.0.0.1:5003).
+
+## Observações
+- O banco de dados será criado automaticamente em `data/qa_agent.db`.
+- O projeto não utiliza mais `test_cases.db`.
+- O front-end exibe histórias e casos de teste gerados automaticamente.
+- O código está preparado para rodar em Linux.
+
+## Dependências
+Instale todas as dependências com:
+```bash
+pip install -r requirements.txt
+```
+
+## Segurança
+- O arquivo `.env` **NÃO** deve ser versionado. Adicione ao `.gitignore`.
 
 ## Contribuição
 Contribuições são bem-vindas! Siga os passos abaixo:

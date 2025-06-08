@@ -3,8 +3,11 @@ import sqlite3
 from datetime import datetime
 
 class DBManager:
-    def __init__(self, db_path='test_cases.db'):
-        self.db_path = os.path.abspath(db_path)
+    def __init__(self, db_path=None):
+        if db_path is None:
+            self.db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '../data/qa_agent.db'))
+        else:
+            self.db_path = os.path.abspath(db_path)
         os.makedirs(os.path.dirname(self.db_path), exist_ok=True)
 
         self.conn = None
@@ -121,9 +124,9 @@ class DBManager:
         self.connect()
         try:
             self.cursor.execute("SELECT * FROM user_stories ORDER BY created_at DESC")
-
-            return [dict(row) for row in self.cursor.fetchall()
-            ]
+            stories = [dict(row) for row in self.cursor.fetchall()]
+            print("Histórias recuperadas do banco de dados:", stories)
+            return stories
         finally:
             self._disconnect()
 
@@ -166,6 +169,8 @@ class DBManager:
         finally:
             self._disconnect()
 
+
+##TESTES BD
 from db_manager import DBManager
 
 # Inicializa o gerenciador de banco de dados

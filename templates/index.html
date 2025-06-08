@@ -37,5 +37,10 @@
         </div>
     {% endif %}
 </div>
+
+<script>
+        const userStories = JSON.parse('{{ user_stories|tojson|safe }}');
+        console.log("Histórias de usuário recebidas:", userStories);
+    </script>
 {% endblock %}
 

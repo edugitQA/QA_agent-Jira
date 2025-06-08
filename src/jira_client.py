@@ -22,19 +22,17 @@ class JiraClient:
             print(f"Erro ao conectar ao Jira: {e}")
             raise
 
-    def get_user_stories(self, project_key, status= "To Do", days_ago=None):
+    def get_user_stories(self, project_key, status="To Do", days_ago=None, no_date_limit=False):
         """
         Busca histórias de usuário em um projeto Jira com base no status e na data de criação.
-        args:
+        Args:
             project_key (str): Chave do projeto Jira.
             status (str): Status das histórias de usuário a serem buscadas. Padrão é "To Do".
             days_ago (int, optional): Buscar histórias de usuário criadas nos últimos 'n' dias.
-                                                            Se None, busca todas as histórias.
-        
-        returns:
+            no_date_limit (bool, optional): Ignorar limite de data e buscar todas as histórias.
+        Returns:
             list: Lista de histórias de usuário encontradas.
         """
-        
         try:
             jql_parts = [
                 f'project = {project_key}',
@@ -42,10 +40,9 @@ class JiraClient:
                 f'status = "{status}"'
             ]
 
-            if days_ago is not None:
+            if days_ago is not None and not no_date_limit:
                 date_limit = (datetime.now() - timedelta(days=days_ago)).strftime("%Y-%m-%d")
                 jql_parts.append(f'created >= "{date_limit}"')
-                print(f"Buscando histórias com a query JQL: {date_limit}")
 
             jql_query = " AND ".join(jql_parts)
             print(f"Buscando histórias com a query JQL: {jql_query}")
