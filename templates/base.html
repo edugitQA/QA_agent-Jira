@@ -5,46 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}QA Agent - Casos de Teste{% endblock %}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-        .navbar {
-            margin-bottom: 20px;
-        }
-        .story-card {
-            margin-bottom: 20px;
-            transition: transform 0.2s;
-        }
-        .story-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .test-case-content {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .test-case-content h1 {
-            font-size: 1.8rem;
-        }
-        .test-case-content h2 {
-            font-size: 1.5rem;
-        }
-        .test-case-content h3 {
-            font-size: 1.3rem;
-        }
-        .test-case-content h4, h5, h6 {
-            font-size: 1.1rem;
-        }
-        .test-case-meta {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-bottom: 5px;
-        }
-    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="{{ url_for('static', filename='styles.css') }}" rel="stylesheet">
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -80,8 +42,8 @@
             {% block content %}{% endblock %}
         </main>
 
-        <footer class="mt-5 pt-3 text-muted border-top">
-            <p class="text-center">&copy; 2025 QA Agent - Desenvolvido como MVP</p>
+        <footer class="mt-5 pt-3 border-top">
+            <p class="text-center text-white">&copy; 2025 QA Agent - Desenvolvido por Eduardo Alves</p>
         </footer>
     </div>
 
