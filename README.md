@@ -1,3 +1,10 @@
+<!-- Badges de tecnologias utilizadas -->
+<p align="left">
+  <img src="https://img.shields.io/badge/python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python"/>
+  <img src="https://img.shields.io/badge/sqlite-003B57?style=for-the-badge&logo=sqlite&logoColor=white" alt="SQLite"/>
+  <img src="https://img.shields.io/badge/flask-000000?style=for-the-badge&logo=flask&logoColor=white" alt="Flask"/>
+</p>
+
 # QA-Agent
 O QA Agent é um exemplo de como a IA pode ser aplicada para automatizar tarefas repetitivas e aumentar a produtividade das equipes de QA.
 Ao gerar casos de teste automaticamente a partir de histórias de usuário, o sistema permite que os testadores foquem em atividades de maior
