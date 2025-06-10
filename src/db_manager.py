@@ -212,27 +212,27 @@ from db_manager import DBManager
 # Inicializa o gerenciador de banco de dados
 db_manager = DBManager()
 
-# Salva uma história de usuário de exemplo
-story_id = db_manager.save_user_story(
-    jira_key="TEST-123",
-    title="Exemplo de História",
-    description="Esta é uma história de usuário de exemplo para testar o banco de dados.",
-    status="To Do"
-)
-print(f"História salva com ID: {story_id}")
+# # Salva uma história de usuário de exemplo
+# story_id = db_manager.save_user_story(
+#     jira_key="TEST-123",
+#     title="Exemplo de História",
+#     description="Esta é uma história de usuário de exemplo para testar o banco de dados.",
+#     status="To Do"
+# )
+# print(f"História salva com ID: {story_id}")
 
-# Salva casos de teste para a história
-test_case_id = db_manager.save_test_cases(
-    user_story_id=story_id,
-    content="# Casos de Teste\n\n## Cenário 1\n- Passo 1\n- Passo 2\n\n## Cenário 2\n- Passo 1\n- Passo 2"
-)
-print(f"Casos de teste salvos com ID: {test_case_id}")
+# # Salva casos de teste para a história
+# test_case_id = db_manager.save_test_cases(
+#     user_story_id=story_id,
+#     content="# Casos de Teste\n\n## Cenário 1\n- Passo 1\n- Passo 2\n\n## Cenário 2\n- Passo 1\n- Passo 2"
+# )
+# print(f"Casos de teste salvos com ID: {test_case_id}")
 
 # Recupera todas as histórias
 stories = db_manager.get_all_user_stories()
 print(f"Número de histórias no banco: {len(stories)}")
 
-# Recupera os casos de teste para a história
-test_cases = db_manager.get_test_cases_for_story(story_id)
-print(f"Número de casos de teste para a história {story_id}: {len(test_cases)}")
-print(f"Conteúdo do primeiro caso de teste: {test_cases[0]['content'][:50]}...")
+# # Recupera os casos de teste para a história
+# test_cases = db_manager.get_test_cases_for_story(story_id)
+# print(f"Número de casos de teste para a história {story_id}: {len(test_cases)}")
+# print(f"Conteúdo do primeiro caso de teste: {test_cases[0]['content'][:50]}...")
