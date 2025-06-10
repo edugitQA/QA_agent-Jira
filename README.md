@@ -18,6 +18,10 @@ O QA Agent é um sistema automatizado projetado para equipes de Garantia de Qual
 - **Geração de casos de teste**: Utiliza modelos de linguagem avançados da OpenAI para criar casos de teste detalhados.
 - **Automatização**: Reduz o esforço manual e melhora a eficiência do processo de QA.
 
+## Atualizações Recentes
+
+- **História de exemplo comentada**: A história de exemplo e seus casos de teste foram comentados no arquivo `db_manager.py` para evitar execução durante testes ou produção.
+
 ## Estrutura do Projeto
 ```
 qa_agent/
