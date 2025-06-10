@@ -25,6 +25,7 @@
                         <h5 class="card-title">{{ story.title }}</h5>
                         <p class="card-text text-muted small">Criado em: {{ story.created_at|format_datetime }}</p>
                         <a href="{{ url_for('view_story', story_id=story.id) }}" class="btn btn-primary">Ver Casos de Teste</a>
+                        <button onclick="deleteStory('{{ story.id }}')" class="btn btn-danger">Excluir</button>
                     </div>
                 </div>
             </div>
@@ -41,6 +42,19 @@
 <script>
         const userStories = JSON.parse('{{ user_stories|tojson|safe }}');
         console.log("Histórias de usuário recebidas:", userStories);
+        function deleteStory(storyId) {
+        fetch(`/delete_story/${storyId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                alert('História excluída com sucesso!');
+                location.reload(); // Atualiza a página
+            } else {
+                alert('Erro ao excluir a história.');
+            }
+        });
+    }
     </script>
 {% endblock %}
 

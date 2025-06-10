@@ -24,6 +24,9 @@
                 <p class="card-text text-muted small">Criado em: {{ story.created_at|format_datetime }}</p>
                 <h5>Descrição:</h5>
                 <p class="card-text">{{ story.description }}</p>
+                <button onclick="deleteStory({{ story.id }})">Excluir</button>
+            </div>
+               
             </div>
         </div>
     </div>

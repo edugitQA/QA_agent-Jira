@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from datetime import datetime
+import time
 
 class DBManager:
     def __init__(self, db_path=None):
@@ -140,14 +141,17 @@ class DBManager:
             self._disconnect() 
 
     def get_test_cases_for_story(self, user_story_id):
-       
         self.connect()
+        start_time = time.time()
         try:
             self.cursor.execute(
                 "SELECT * FROM test_cases WHERE user_story_id = ? ORDER BY generated_at DESC",
                 (user_story_id,)
             )
-            return [dict(row) for row in self.cursor.fetchall()]
+            results = [dict(row) for row in self.cursor.fetchall()]
+            end_time = time.time()
+            print(f"Consulta SQL executada em {end_time - start_time:.2f} segundos.")
+            return results
         finally:
             self._disconnect()
 
@@ -166,6 +170,17 @@ class DBManager:
             )
             row = self.cursor.fetchone()
             return dict(row) if row else None
+        finally:
+            self._disconnect()
+
+    def delete_user_story(self, story_id):
+        """
+        Exclui uma história de usuário do banco de dados com base no ID.
+        """
+        self.connect()
+        try:
+            self.cursor.execute("DELETE FROM user_stories WHERE id = ?", (story_id,))
+            self.conn.commit()
         finally:
             self._disconnect()
 

@@ -5,3 +5,4 @@ venv/
 __pycache__/
 data/qa_agent.db
 data/qa_agent.db
+documentacao_tecnica_qa_agent.md

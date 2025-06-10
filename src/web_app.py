@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sys
 import os
+import time
 
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
@@ -36,7 +37,11 @@ def view_story(story_id):
         flash('História não encontrada', 'error')
         return redirect(url_for('index'))
 
+    start_time = time.time()
     test_cases = db_manager.get_test_cases_for_story(story_id)
+    end_time = time.time()
+    print(f"Recuperação dos casos de teste executada em {end_time - start_time:.2f} segundos.")
+
     # Converte o conteúdo Markdown dos casos de teste para HTML
     for test_case in test_cases:
         # Sanitiza o HTML para evitar XSS
@@ -48,7 +53,24 @@ def view_story(story_id):
             attributes={'a': ['href', 'title']}
         )
 
-    return render_template('story.html', story=story, test_cases=test_cases)
+    render_start_time = time.time()
+    response = render_template('story.html', story=story, test_cases=test_cases)
+    render_end_time = time.time()
+    print(f"Renderização do template executada em {render_end_time - render_start_time:.2f} segundos.")
+
+    return response
+
+@app.route('/delete_story/<int:story_id>', methods=['DELETE'])
+def delete_story(story_id):
+    """
+    Exclui uma história de usuário do banco de dados.
+    """
+    try:
+        db_manager.delete_user_story(story_id)
+        return '', 204  # Retorna sucesso sem conteúdo
+    except Exception as e:
+        print(f"Erro ao excluir história: {e}")
+        return str(e), 500
 
 @app.template_filter('format_datetime')
 def format_datetime(value, format='%d/%m/%Y %H:%M'):
