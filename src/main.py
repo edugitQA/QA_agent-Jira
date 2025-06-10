@@ -36,7 +36,7 @@ class QAAgent:
         # Configurações padrão do agente, como chave do projeto e status das histórias
         self.project_key = os.getenv("JIRA_PROJECT_KEY", "KCA")
         self.status = os.getenv("JIRA_STATUS", "To Do")
-        self.check_interval = int(os.getenv("CHECK_INTERVAL_MINUTES", "1"))  # Intervalo de monitoramento em minutos
+        self.check_interval = 1  # Define o intervalo de monitoramento para 1 minuto
 
         # Armazena o timestamp da última verificação
         self.last_checked_time = None
@@ -124,6 +124,7 @@ class QAAgent:
 
             # Atualiza o timestamp da última verificação para o momento atual
             self.last_checked_time = datetime.now()
+            self.db_manager.log_sync_time()  # Registra o horário da sincronização
 
             if not stories:
                 print("Nenhuma nova história encontrada.")

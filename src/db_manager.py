@@ -66,6 +66,16 @@ class DBManager:
             )
             print("Tabela test_cases verificada/criada.")
 
+            self.cursor.execute(
+                """
+                CREATE TABLE IF NOT EXISTS sync_logs (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    sync_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+                """
+            )
+            print("Tabela sync_logs verificada/criada.")
+
             self.conn.commit()
             print("Banco de dados inicializado com sucesso.")
         except Exception as e:
@@ -180,6 +190,17 @@ class DBManager:
         self.connect()
         try:
             self.cursor.execute("DELETE FROM user_stories WHERE id = ?", (story_id,))
+            self.conn.commit()
+        finally:
+            self._disconnect()
+
+    def log_sync_time(self):
+        """
+        Registra o horário da última sincronização com o Jira.
+        """
+        self.connect()
+        try:
+            self.cursor.execute("INSERT INTO sync_logs (sync_time) VALUES (CURRENT_TIMESTAMP)")
             self.conn.commit()
         finally:
             self._disconnect()
