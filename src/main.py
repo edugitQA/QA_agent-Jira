@@ -36,7 +36,7 @@ class QAAgent:
         # Configurações padrão do agente, como chave do projeto e status das histórias
         self.project_key = os.getenv("JIRA_PROJECT_KEY", "KCA")
         self.status = os.getenv("JIRA_STATUS", "To Do")
-        self.check_interval = 1  # Define o intervalo de monitoramento para 1 minuto
+        self.check_interval = 0.05  # Intervalo de monitoramento reduzido para ~3 segundos
 
         # Armazena o timestamp da última verificação
         self.last_checked_time = None

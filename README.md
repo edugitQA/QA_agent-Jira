@@ -70,17 +70,16 @@ qa_agent/
 
 ## Execução
 
-### Iniciar o Agente QA
-Execute o script para iniciar o agente:
+Agora, tanto o agente quanto a aplicação web são executados juntos pelo mesmo comando, sem necessidade de scripts separados:
+
 ```bash
-./start_agent.sh
+python3 src/web_app.py
 ```
 
-### Iniciar a Aplicação Web
-Execute o script para iniciar a aplicação web:
-```bash
-./start_webapp.sh
-```
+Acesse a aplicação em [http://127.0.0.1:5003](http://127.0.0.1:5003).
+
+- O agente QA roda em background, monitorando novas histórias de usuário no Jira em tempo quase real (a cada ~3 segundos).
+- Não utilize mais os scripts `start_agent.sh` e `start_webapp.sh` para produção.
 
 ## Componentes Principais
 
