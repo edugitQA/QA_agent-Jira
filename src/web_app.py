@@ -99,4 +99,4 @@ if __name__ == '__main__':
     agent_thread = threading.Thread(target=start_agent_background, daemon=True)
     agent_thread.start()
     
-    app.run(debug=True, host='0.0.0.0', port=5003)
+    app.run(debug=False, host='0.0.0.0', port=5003)
