@@ -13,7 +13,7 @@ import unicodedata  # Para normalizar caracteres Unicode
 # Importa os componentes do agente, como clientes para Jira e OpenAI, e o gerenciador de banco de dados
 from jira_client import JiraClient
 from openai_client import OpenAIClient
-from db_manager_extended import DBManagerExtended
+from db_manager import DBManager
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
@@ -31,7 +31,7 @@ class QAAgent:
         # Inicializa os clientes para Jira e OpenAI, além do gerenciador de banco de dados
         self.jira_client = JiraClient()
         self.openai_client = OpenAIClient()
-        self.db_manager = DBManagerExtended()
+        self.db_manager = DBManager()
 
         # Configurações padrão do agente, como chave do projeto e status das histórias
         self.project_key = os.getenv("JIRA_PROJECT_KEY", "KCA")
@@ -73,12 +73,6 @@ class QAAgent:
             status = unicodedata.normalize('NFKD', story['status']).encode('ascii', 'ignore').decode('ascii')
 
             print(f"Processando história: {jira_key} - {title}")
-
-            # Verifica se já existem casos de teste para a história
-            existing_test_cases = self.db_manager.get_test_cases_for_story(jira_key)
-            if existing_test_cases:
-                print(f"Casos de teste já existem para a história {jira_key}. Pulando geração.")
-                return True
 
             # Salva a história no banco de dados
             story_id = self.db_manager.save_user_story(
