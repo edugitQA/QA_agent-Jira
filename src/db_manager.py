@@ -121,6 +121,18 @@ class DBManager:
     def save_test_cases(self, user_story_id, content):
         self.connect()
         try:
+            # Verificar se já existe um caso de teste com o mesmo conteúdo para o user_story_id
+            self.cursor.execute(
+                "SELECT id FROM test_cases WHERE user_story_id = ? AND content = ?",
+                (user_story_id, content)
+            )
+            existing_test_case = self.cursor.fetchone()
+
+            if existing_test_case:
+                print("Caso de teste duplicado detectado. ID existente:", existing_test_case["id"])
+                return existing_test_case["id"]
+
+            # Inserir novo caso de teste se não for duplicado
             self.cursor.execute(
                 "INSERT INTO test_cases (user_story_id, content) VALUES (?, ?)",
                 (user_story_id, content)
@@ -204,35 +216,3 @@ class DBManager:
             self.conn.commit()
         finally:
             self._disconnect()
-
-
-##TESTES BD
-from db_manager import DBManager
-
-# Inicializa o gerenciador de banco de dados
-db_manager = DBManager()
-
-# # Salva uma história de usuário de exemplo
-# story_id = db_manager.save_user_story(
-#     jira_key="TEST-123",
-#     title="Exemplo de História",
-#     description="Esta é uma história de usuário de exemplo para testar o banco de dados.",
-#     status="To Do"
-# )
-# print(f"História salva com ID: {story_id}")
-
-# # Salva casos de teste para a história
-# test_case_id = db_manager.save_test_cases(
-#     user_story_id=story_id,
-#     content="# Casos de Teste\n\n## Cenário 1\n- Passo 1\n- Passo 2\n\n## Cenário 2\n- Passo 1\n- Passo 2"
-# )
-# print(f"Casos de teste salvos com ID: {test_case_id}")
-
-# Recupera todas as histórias
-stories = db_manager.get_all_user_stories()
-print(f"Número de histórias no banco: {len(stories)}")
-
-# # Recupera os casos de teste para a história
-# test_cases = db_manager.get_test_cases_for_story(story_id)
-# print(f"Número de casos de teste para a história {story_id}: {len(test_cases)}")
-# print(f"Conteúdo do primeiro caso de teste: {test_cases[0]['content'][:50]}...")
