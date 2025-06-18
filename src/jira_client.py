@@ -8,9 +8,9 @@ load_dotenv()
 
 class JiraClient:
     def __init__(self):
-        self.jira_server = os.getenv('JIRA_SERVER')
-        self.jira_username = os.getenv('JIRA_USERNAME')
-        self.jira_api_token = os.getenv('JIRA_API_TOKEN')
+        self.jira_server = os.getenv("JIRA_SERVER")
+        self.jira_username = os.getenv("JIRA_USERNAME")
+        self.jira_api_token = os.getenv("JIRA_API_TOKEN")
 
         try:
             self.jira = JIRA(
@@ -65,7 +65,20 @@ class JiraClient:
         except Exception as e:
             print(f"Erro ao buscar histórias no Jira: {e}")
             return []
-        
+
+    def add_comment_to_issue(self, issue_key, comment_body):
+        """
+        Adiciona um comentário a uma issue do Jira.
+        Args:
+            issue_key (str): A chave da issue (ex: QA-123).
+            comment_body (str): O corpo do comentário a ser adicionado.
+        """
+        try:
+            issue = self.jira.issue(issue_key)
+            self.jira.add_comment(issue=issue, body=comment_body)
+            print(f"Comentário adicionado com sucesso à issue {issue_key}.")
+        except Exception as e:
+            print(f"Erro ao adicionar comentário à issue {issue_key}: {e}")
 
 
 ##teste isolado

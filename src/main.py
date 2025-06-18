@@ -67,10 +67,10 @@ class QAAgent:
         """
         try:
             # Normaliza os caracteres Unicode para evitar problemas de codificação
-            jira_key = unicodedata.normalize('NFKD', story['key']).encode('ascii', 'ignore').decode('ascii')
-            title = unicodedata.normalize('NFKD', story['title']).encode('ascii', 'ignore').decode('ascii')
-            description = unicodedata.normalize('NFKD', story['description']).encode('ascii', 'ignore').decode('ascii')
-            status = unicodedata.normalize('NFKD', story['status']).encode('ascii', 'ignore').decode('ascii')
+            jira_key = unicodedata.normalize("NFKD", story["key"]).encode("ascii", "ignore").decode("ascii")
+            title = unicodedata.normalize("NFKD", story["title"]).encode("ascii", "ignore").decode("ascii")
+            description = unicodedata.normalize("NFKD", story["description"]).encode("ascii", "ignore").decode("ascii")
+            status = unicodedata.normalize("NFKD", story["status"]).encode("ascii", "ignore").decode("ascii")
 
             print(f"Processando história: {jira_key} - {title}")
 
@@ -83,12 +83,6 @@ class QAAgent:
             )
             print(f"História {jira_key} salva/atualizada no DB com ID: {story_id}")
 
-            # Verifica se já existem casos de teste para a história (pelo story_id)
-            existing_test_cases = self.db_manager.get_test_cases_for_story(story_id)
-            if existing_test_cases:
-                print(f"Já existem casos de teste para a história {jira_key} (ID: {story_id}). Pulando geração.")
-                return True
-
             # Prepara o texto da história para enviar ao modelo de IA
             story_text = f"""
             Título: {title}
@@ -98,11 +92,18 @@ class QAAgent:
             """
 
             # Gera os casos de teste usando o OpenAI
-            test_cases = self.openai_client.generate_test_cases(story_text)
+            raw_test_cases = self.openai_client.generate_test_cases(story_text)
 
-            # Salva os casos de teste no banco de dados
-            test_case_db_id = self.db_manager.save_test_cases(story_id, test_cases)
+            # Formata os casos de teste para Markdown
+            formatted_test_cases = self.format_test_cases_to_markdown(raw_test_cases)
+
+            # Salva os casos de teste no banco de dados (pode salvar o raw ou o formatado, dependendo da necessidade)
+            test_case_db_id = self.db_manager.save_test_cases(story_id, raw_test_cases)
             print(f"Casos de teste gerados e salvos no DB para {jira_key} com ID: {test_case_db_id}")
+
+            # Adicionar os casos de teste formatados como comentário no Jira
+            self.jira_client.add_comment_to_issue(issue_key=jira_key, comment_body=formatted_test_cases)
+
             return True
 
         except Exception as e:
@@ -172,6 +173,31 @@ class QAAgent:
         """
         self.check_for_new_stories()
         print("Verificação única concluída.")
+
+    def format_test_cases_to_markdown(self, test_cases_text):
+        """
+        Formata o texto dos casos de teste para Markdown, destacando títulos e cenários.
+        Args:
+            test_cases_text (str): O texto dos casos de teste gerados.
+        Returns:
+            str: O texto formatado em Markdown.
+        """
+        lines = test_cases_text.splitlines()
+        formatted_lines = []
+        for line in lines:
+            if line.startswith("Título:"):
+                formatted_lines.append(f"h2. {line.replace('Título:', '').strip()}\n")
+            elif line.startswith("Cenário:"):
+                formatted_lines.append(f"h3. {line.strip()}\n")
+            elif line.strip().startswith("Dado que") or \
+                 line.strip().startswith("Quando") or \
+                 line.strip().startswith("Então") or \
+                 line.strip().startswith("E") or \
+                 line.strip().startswith("Mas"):
+                formatted_lines.append(f"* {line.strip()}\n")
+            elif line.strip(): # Adiciona linhas não vazias que não são títulos ou cenários
+                formatted_lines.append(f"{{code}}{line.strip()}{{code}}\n")
+        return "".join(formatted_lines)
 
 def main():
     """
