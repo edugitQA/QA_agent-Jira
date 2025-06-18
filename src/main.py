@@ -83,6 +83,12 @@ class QAAgent:
             )
             print(f"História {jira_key} salva/atualizada no DB com ID: {story_id}")
 
+             # Verifica se já existem casos de teste para a história (pelo story_id)Add commentMore actions
+            existing_test_cases = self.db_manager.get_test_cases_for_story(story_id)
+            if existing_test_cases:
+                print(f"Já existem casos de teste para a história {jira_key} (ID: {story_id}). Pulando geração.")
+                return True
+
             # Prepara o texto da história para enviar ao modelo de IA
             story_text = f"""
             Título: {title}
