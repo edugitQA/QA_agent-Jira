@@ -58,13 +58,9 @@ class QAAgent:
     def process_user_story(self, story):
         """
         Processa uma história de usuário, gerando casos de teste e salvando no banco de dados.
-
-        Args:
-            story: Objeto Issue do Jira representando a história de usuário.
-
-        Returns:
-            bool: True se o processamento foi bem-sucedido, False caso contrário.
+        Agora, cada cenário de teste é registrado como subtarefa no Jira.
         """
+        print(f"[DEBUG] Iniciando processamento da história: {story.get('key', story)}")
         try:
             # Normaliza os caracteres Unicode para evitar problemas de codificação
             jira_key = unicodedata.normalize("NFKD", story["key"]).encode("ascii", "ignore").decode("ascii")
@@ -82,8 +78,9 @@ class QAAgent:
                 status=status
             )
             print(f"História {jira_key} salva/atualizada no DB com ID: {story_id}")
+            print(f"[DEBUG] História salva no banco: {jira_key}")
 
-             # Verifica se já existem casos de teste para a história (pelo story_id)Add commentMore actions
+            # Verifica se já existem casos de teste para a história (pelo story_id)
             existing_test_cases = self.db_manager.get_test_cases_for_story(story_id)
             if existing_test_cases:
                 print(f"Já existem casos de teste para a história {jira_key} (ID: {story_id}). Pulando geração.")
@@ -99,28 +96,47 @@ class QAAgent:
 
             # Gera os casos de teste usando o OpenAI
             raw_test_cases = self.openai_client.generate_test_cases(story_text)
+            print(f"[DEBUG] Casos de teste gerados para {jira_key}:\n{raw_test_cases}")
 
-            # Formata os casos de teste para Markdown
-            formatted_test_cases = self.format_test_cases_to_markdown(raw_test_cases)
-
-            # Salva os casos de teste no banco de dados (pode salvar o raw ou o formatado, dependendo da necessidade)
+            # Salva os casos de teste no banco de dados
             test_case_db_id = self.db_manager.save_test_cases(story_id, raw_test_cases)
             print(f"Casos de teste gerados e salvos no DB para {jira_key} com ID: {test_case_db_id}")
 
-            # Adicionar os casos de teste formatados como comentário no Jira
-            self.jira_client.add_comment_to_issue(issue_key=jira_key, comment_body=formatted_test_cases)
+            # Divide os cenários de teste por "Cenário:" (padrão do prompt)
+            cenarios = []
+            current = []
+            for line in raw_test_cases.splitlines():
+                if line.strip().lower().startswith("cenário") or line.strip().lower().startswith("cenario"):
+                    if current:
+                        cenarios.append("\n".join(current))
+                        current = []
+                current.append(line)
+            if current:
+                cenarios.append("\n".join(current))
 
+            # Cria uma subtarefa para cada cenário
+            for idx, cenario in enumerate(cenarios, 1):
+                resumo = cenario.splitlines()[0].replace("Cenário:", "").replace("Cenario:", "").strip() or f"Cenário {idx}"
+                descricao = "\n".join(cenario.splitlines()[1:]).strip()
+                self.jira_client.create_subtask(
+                    parent_issue_key=jira_key,
+                    summary=resumo,
+                    description=descricao
+                )
+
+            print(f"[DEBUG] Subtarefas criadas para {jira_key} (total: {len(cenarios)})")
             return True
 
         except Exception as e:
-            print(f"Erro ao processar história {story.key if hasattr(story, 'key') else 'desconhecida'}: {e}")
-            traceback.print_exc()  # Exibe o rastreamento completo do erro
+            print(f"[ERRO] Falha ao processar história {story.get('key', story)}: {e}")
+            traceback.print_exc()
             return False
 
     def check_for_new_stories(self):
         """
         Verifica se há novas histórias de usuário no Jira e as processa.
         """
+        print(f"[DEBUG] Iniciando verificação de novas histórias no Jira...")
         try:
             print(f"Verificando novas histórias em {self.project_key} com status '{self.status}'...")
 
@@ -143,15 +159,17 @@ class QAAgent:
                 print("Nenhuma nova história encontrada.")
                 return
 
+            print(f"[DEBUG] {len(stories)} histórias encontradas para processar.")
             print(f"Encontradas {len(stories)} novas histórias.")
 
             # Processa cada história encontrada
             for story in stories:
+                print(f"[DEBUG] Processando história: {story.get('key', story)}")
                 self.process_user_story(story)
 
         except Exception as e:
-            print(f"Erro ao verificar novas histórias: {e}")
-            traceback.print_exc()  # Exibe o rastreamento completo do erro
+            print(f"[ERRO] Falha ao verificar novas histórias: {e}")
+            traceback.print_exc()
 
     def start_monitoring(self):
         """

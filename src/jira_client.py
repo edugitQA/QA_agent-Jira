@@ -68,17 +68,45 @@ class JiraClient:
 
     def add_comment_to_issue(self, issue_key, comment_body):
         """
-        Adiciona um comentário a uma issue do Jira.
+        [REMOVIDO] Função substituída por registro automático de subtarefas.
+        """
+        pass
+
+    def create_subtask(self, parent_issue_key, summary, description=None):
+        """
+        Cria uma subtarefa (sub-task) em uma User Story no Jira.
         Args:
-            issue_key (str): A chave da issue (ex: QA-123).
-            comment_body (str): O corpo do comentário a ser adicionado.
+            parent_issue_key (str): Chave da User Story (ex: KCA-123).
+            summary (str): Título da subtarefa (ex: nome do cenário de teste).
+            description (str, opcional): Descrição detalhada do cenário.
+        Returns:
+            issue: Objeto da issue criada ou None em caso de erro.
         """
         try:
-            issue = self.jira.issue(issue_key)
-            self.jira.add_comment(issue=issue, body=comment_body)
-            print(f"Comentário adicionado com sucesso à issue {issue_key}.")
+            parent_issue = self.jira.issue(parent_issue_key)
+            project_key = parent_issue.fields.project.key
+            subtask_issue_type = None
+            # Busca o tipo de issue 'Sub-task' para o projeto
+            for issue_type in self.jira.project(project_key).issueTypes:
+                if issue_type.name.lower() in ["sub-task", "subtarefa", "subtask"]:
+                    subtask_issue_type = issue_type
+                    break
+            if not subtask_issue_type:
+                print(f"Tipo de issue 'Sub-task' não encontrado no projeto {project_key}.")
+                return None
+            issue_dict = {
+                'project': {'key': project_key},
+                'parent': {'key': parent_issue_key},
+                'summary': summary,
+                'description': description or '',
+                'issuetype': {'id': subtask_issue_type.id}
+            }
+            new_issue = self.jira.create_issue(fields=issue_dict)
+            print(f"Subtarefa criada: {new_issue.key} para {parent_issue_key}")
+            return new_issue
         except Exception as e:
-            print(f"Erro ao adicionar comentário à issue {issue_key}: {e}")
+            print(f"Erro ao criar subtarefa para {parent_issue_key}: {e}")
+            return None
 
 
 ##teste isolado
