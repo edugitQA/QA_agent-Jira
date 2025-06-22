@@ -80,7 +80,7 @@ class QAAgent:
             print(f"História {jira_key} salva/atualizada no DB com ID: {story_id}")
             print(f"[DEBUG] História salva no banco: {jira_key}")
 
-            # Verifica se já existem casos de teste para a história (pelo story_id)
+            # Verificar se já existem casos de teste para a história (pelo story_id)
             existing_test_cases = self.db_manager.get_test_cases_for_story(story_id)
             if existing_test_cases:
                 print(f"Já existem casos de teste para a história {jira_key} (ID: {story_id}). Pulando geração.")
@@ -117,11 +117,13 @@ class QAAgent:
             # Cria uma subtarefa para cada cenário
             for idx, cenario in enumerate(cenarios, 1):
                 resumo = cenario.splitlines()[0].replace("Cenário:", "").replace("Cenario:", "").strip() or f"Cenário {idx}"
-                descricao = "\n".join(cenario.splitlines()[1:]).strip()
+                descricao_bruta = "\n".join(cenario.splitlines()[1:]).strip()
+                # Formata a descrição para Markdown antes de criar a subtarefa
+                descricao_formatada = self.format_test_cases_to_markdown(descricao_bruta)
                 self.jira_client.create_subtask(
                     parent_issue_key=jira_key,
                     summary=resumo,
-                    description=descricao
+                    description=descricao_formatada
                 )
 
             print(f"[DEBUG] Subtarefas criadas para {jira_key} (total: {len(cenarios)})")

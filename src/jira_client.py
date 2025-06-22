@@ -3,8 +3,15 @@ from jira import JIRA
 from dotenv import load_dotenv
 from datetime import datetime, timedelta
 import unicodedata
+import logging
 
 load_dotenv()
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s [%(levelname)s] %(name)s: %(message)s',
+)
+logger = logging.getLogger(__name__)
 
 class JiraClient:
     def __init__(self):
@@ -17,9 +24,9 @@ class JiraClient:
                 server=self.jira_server,
                 basic_auth=(self.jira_username, self.jira_api_token),
             )
-            print(f"Conexão com jira estabelecida com sucesso em {self.jira_server}") 
+            logger.info(f"Conexão com jira estabelecida com sucesso em {self.jira_server}") 
         except Exception as e:
-            print(f"Erro ao conectar ao Jira: {e}")
+            logger.error(f"Erro ao conectar ao Jira: {e}")
             raise
 
     def get_user_stories(self, project_key, status="To Do", days_ago=None, no_date_limit=False):
@@ -45,10 +52,10 @@ class JiraClient:
                 jql_parts.append(f'created >= "{date_limit}"')
 
             jql_query = " AND ".join(jql_parts)
-            print(f"Buscando histórias com a query JQL: {jql_query}")
+            logger.info(f"Buscando histórias com a query JQL: {jql_query}")
 
             issues = self.jira.search_issues(jql_query, maxResults=50)
-            print(f"Encontradas {len(issues)} histórias de usuário no projeto.")
+            logger.info(f"Encontradas {len(issues)} histórias de usuário no projeto.")
 
             # Formatando os resultados
             user_stories = []
@@ -63,7 +70,7 @@ class JiraClient:
             return user_stories
 
         except Exception as e:
-            print(f"Erro ao buscar histórias no Jira: {e}")
+            logger.error(f"Erro ao buscar histórias no Jira: {e}")
             return []
 
     def add_comment_to_issue(self, issue_key, comment_body):
@@ -92,7 +99,7 @@ class JiraClient:
                     subtask_issue_type = issue_type
                     break
             if not subtask_issue_type:
-                print(f"Tipo de issue 'Sub-task' não encontrado no projeto {project_key}.")
+                logger.error(f"Tipo de issue 'Sub-task' não encontrado no projeto {project_key}.")
                 return None
             issue_dict = {
                 'project': {'key': project_key},
@@ -102,10 +109,10 @@ class JiraClient:
                 'issuetype': {'id': subtask_issue_type.id}
             }
             new_issue = self.jira.create_issue(fields=issue_dict)
-            print(f"Subtarefa criada: {new_issue.key} para {parent_issue_key}")
+            logger.info(f"Subtarefa criada: {new_issue.key} para {parent_issue_key}")
             return new_issue
         except Exception as e:
-            print(f"Erro ao criar subtarefa para {parent_issue_key}: {e}")
+            logger.error(f"Erro ao criar subtarefa para {parent_issue_key}: {e}")
             return None
 
 
@@ -128,6 +135,6 @@ if __name__ == "__main__":
         title_normalized = unicodedata.normalize('NFKD', story['title']).encode('ascii', 'ignore').decode('ascii')
         description_normalized = unicodedata.normalize('NFKD', story['description'][:100]).encode('ascii', 'ignore').decode('ascii')
 
-        print(f"\n{story['key']} - {title_normalized}")
-        print(f"Status: {story['status']}")
-        print(f"Descrição: {description_normalized}...")
+        logger.info(f"\n{story['key']} - {title_normalized}")
+        logger.info(f"Status: {story['status']}")
+        logger.info(f"Descrição: {description_normalized}...")
